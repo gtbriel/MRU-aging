@@ -96,7 +96,7 @@ void fillDisplay(Fila* paginasExistentes, Item *display) {
 void printDisplay(int i, Item *display) {  
   printf("Página %d:\n",display[i].id_display);
   showbits(display[i].id);
-  printf("ParamA = %lu\nParamB = %lu\nParamC = %lu\n",display[i].paramA,display[i].paramB,display[i].paramC);
+  //printf("ParamA = %lu\nParamB = %lu\nParamC = %lu\n",display[i].paramA,display[i].paramB,display[i].paramC);
   printf("-----------\n");
 }
 
@@ -141,7 +141,7 @@ void MRU(Fila* paginasExistentes, Item *display) {
   while(k <= runningTimes) {
 
     if(k % 5 == 0) {
-      printf("-- RESETANDO PRIORIDADE -- \n");
+      printf("\n--**RESETANDO PRIORIDADE**-- \n\n");
       resetingPriority(display);
     }
     
@@ -152,7 +152,7 @@ void MRU(Fila* paginasExistentes, Item *display) {
       }
     }
 
-    printf("------- Finalizando envelhecendo  -------\n\n");
+    printf("------- Finalizando envelhecendo  -------\n");
 
     printf("------- Trocando Páginas -------\n");
 
@@ -163,7 +163,7 @@ void MRU(Fila* paginasExistentes, Item *display) {
     _removed.id = INITIALBINARY;
     Enfileira(paginasExistentes, _removed);
     display[index_p] = _inserted;
-    printf("Página %d inserida no local da página %d\n\n\n",_inserted.id_display,_removed.id_display);
+    printf("Página %d inserida no local da página %d\n",_inserted.id_display,_removed.id_display);
     k++;
   }
 
