@@ -13,10 +13,10 @@ int priority;
 
 typedef struct tItem {
 	uint64_t id;
-  int id_display;
+	int id_display;
 	uint64_t paramA;
-  uint64_t paramB;
-  uint64_t paramC;
+	uint64_t paramB;
+	uint64_t paramC;
 } Item;
 
 typedef struct tCell {
@@ -32,14 +32,14 @@ typedef struct tFila {
 } Fila;
 
 Item createNode() {
-  Item newNode;
-  newNode.id = INITIALBINARY;  
-  newNode.id_display = index_display;
-  index_display += 1;
-  newNode.paramA = rand();
-  newNode.paramB = rand();
-  newNode.paramC = rand();
-  return newNode;
+	Item newNode;
+	newNode.id = INITIALBINARY;
+	newNode.id_display = index_display;
+	index_display += 1;
+	newNode.paramA = rand();
+	newNode.paramB = rand();
+	newNode.paramC = rand();
+	return newNode;
 }
 
 void IniciaFila(Fila* pF) {
@@ -76,96 +76,98 @@ int Desenfileira(Fila* pF, Item* pI) {
 	return 1;
 }
 
-void showbits( unsigned int x ) {
-  int i=0;
-  for (i = BINARYSIZE - 1; i >= 0; i--)  {
-    putchar(x & (1u << i) ? '1' : '0');
-  }
-  printf("\n");
+void showbits(unsigned int x) {
+	int i = 0;
+	for (i = BINARYSIZE - 1; i >= 0; i--) {
+		putchar(x & (1u << i) ? '1' : '0');
+	}
+	printf("\n");
 }
 
-void fillDisplay(Fila* paginasExistentes, Item *display) {
-  int i;
-  for(i=0;i < DISPLAYSIZE;i++) {
-    Item _ref;
-    Desenfileira(paginasExistentes, &_ref);
-    display[i] = _ref;
-  }
+void fillDisplay(Fila* paginasExistentes, Item* display) {
+	int i;
+	for (i = 0; i < DISPLAYSIZE; i++) {
+		Item _ref;
+		Desenfileira(paginasExistentes, &_ref);
+		display[i] = _ref;
+	}
 }
 
-void printDisplay(int i, Item *display) {  
-  printf("Página %d:\n",display[i].id_display);
-  showbits(display[i].id);
-  //printf("ParamA = %lu\nParamB = %lu\nParamC = %lu\n",display[i].paramA,display[i].paramB,display[i].paramC);
-  printf("-----------\n");
+void printDisplay(int i, Item* display) {
+	printf("Página %d:\n", display[i].id_display);
+	showbits(display[i].id);
+	//printf("ParamA = %lu\nParamB = %lu\nParamC = %lu\n",display[i].paramA,display[i].paramB,display[i].paramC);
+	printf("-----------\n");
 }
 
-void aging(int i, Item *display) {  
-  int R_priority = ((double)rand()/(double)RAND_MAX) * 2; // Como se fosse os R Bits;
-  display[i].id >>= 1;
-  if(R_priority) {    
-    display[i].id |= MSB;
-  }
-  printDisplay(i,display);
-
-}
-
-int findLessPriority(Item *display) {
-  int index_less = display[0].id_display;
-  int i;
-
-  for(i=0;i < DISPLAYSIZE;i++) {
-    if(display[index_less].id >= display[i].id) {
-      index_less = i;
-    }
-  }
-
-  return index_less;
-}
-
-void resetingPriority(Item *display) {
-
-  int i;
-
-  for(i=0;i < DISPLAYSIZE;i++) {
-    display[i].id = INITIALBINARY;
-  }
+void aging(int i, Item* display) {
+	int R_priority = ((double)rand() / (double)RAND_MAX) * 2; // Como se fosse os R Bits;
+	display[i].id >>= 1;
+	if (R_priority) {
+		display[i].id |= MSB;
+	}
+	printDisplay(i, display);
 
 }
 
-void MRU(Fila* paginasExistentes, Item *display) { 
+int findLessPriority(Item* display) {
+	int index_less = display[0].id_display;
+	int i;
 
-  int nBreaks = ((double)rand()/(double)RAND_MAX) * 10;
-  int i,j,runningTimes = 10,k;  
+	for (i = 0; i < DISPLAYSIZE; i++) {
+		if (display[index_less].id >= display[i].id) {
+			index_less = i;
+		}
+	}
 
-  while(k <= runningTimes) {
+	return index_less;
+}
 
-    if(k % 5 == 0) {
-      printf("\n--**RESETANDO PRIORIDADE**-- \n\n");
-      resetingPriority(display);
-    }
-    
-    for(i = 0;i < nBreaks;i++) {
-      printf("------- Envelhecendo (%d) -------\n",i);
-      for(j=0;j < DISPLAYSIZE;j++) {
-        aging(j,display);
-      }
-    }
+void resetingPriority(Item* display) {
 
-    printf("------- Finalizando envelhecendo  -------\n");
+	int i;
 
-    printf("------- Trocando Páginas -------\n");
+	for (i = 0; i < DISPLAYSIZE; i++) {
+		display[i].id = INITIALBINARY;
+	}
 
-    Item _inserted;
-    Desenfileira(paginasExistentes, &_inserted);
-    int index_p = findLessPriority(display);
-    Item _removed = display[index_p];
-    _removed.id = INITIALBINARY;
-    Enfileira(paginasExistentes, _removed);
-    display[index_p] = _inserted;
-    printf("Página %d inserida no local da página %d\n",_inserted.id_display,_removed.id_display);
-    k++;
-  }
+}
+
+void MRU(Fila* paginasExistentes, Item* display) {
+
+	int nBreaks = 5;
+	int i, j, runningTimes = 10, k;
+
+	k = 0;
+
+	while (k <= runningTimes) {
+
+		if (k % 5 == 0 && k > 0) {
+			printf("\n--**RESETANDO PRIORIDADE**-- \n\n");
+			resetingPriority(display);
+		}
+
+		for (i = 0; i < nBreaks; i++) {
+			printf("------- Envelhecendo (%d) -------\n", i);
+			for (j = 0; j < DISPLAYSIZE; j++) {
+				aging(j, display);
+			}
+		}
+
+		printf("------- Finalizando envelhecendo  -------\n");
+
+		printf("------- Trocando Páginas -------\n");
+
+		Item _inserted;
+		Desenfileira(paginasExistentes, &_inserted);
+		int index_p = findLessPriority(display);
+		Item _removed = display[index_p];
+		_removed.id = INITIALBINARY;
+		Enfileira(paginasExistentes, _removed);
+		display[index_p] = _inserted;
+		printf("Página %d inserida no local da página %d\n", _inserted.id_display, _removed.id_display);
+		k++;
+	}
 
 }
 
@@ -173,23 +175,23 @@ void MRU(Fila* paginasExistentes, Item *display) {
 
 
 int main(void) {
-  int i=0;
-  Fila paginasExistentes;
-  Item display[DISPLAYSIZE];
-  index_display = 0;  
-  IniciaFila(&paginasExistentes);
+	int i = 0;
+	Fila paginasExistentes;
+	Item display[DISPLAYSIZE];
+	index_display = 0;
+	IniciaFila(&paginasExistentes);
 
-  for(i=0;i < MEMSIZE;i++) {
-    Enfileira(&paginasExistentes, createNode());
-  }
+	for (i = 0; i < MEMSIZE; i++) {
+		Enfileira(&paginasExistentes, createNode());
+	}
 
-  fillDisplay(&paginasExistentes,display);
-  printf("{Display inicial}\n");
-  
-  for(i=0;i < DISPLAYSIZE;i++) {
-    printDisplay(i,display);
-  }
-  
-  MRU(&paginasExistentes, display);
-  return 0;
+	fillDisplay(&paginasExistentes, display);
+	printf("{Display inicial}\n");
+
+	for (i = 0; i < DISPLAYSIZE; i++) {
+		printDisplay(i, display);
+	}
+
+	MRU(&paginasExistentes, display);
+	return 0;
 }
